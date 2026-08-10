@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PLAYMAKERS / Architecture / Urbanism / Landscape / Geomatics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --off-white:#F1EFEA;
+    --grey:#8A8A85;
+    --grey-line:#D8D5CE;
+    --pink:#E32D91;
+    --display: 'Archivo Black', sans-serif;
+    --body: 'Space Grotesk', sans-serif;
+    --mono: 'JetBrains Mono', monospace;
+    --border-w: 3px;
+    --shadow-off: 8px;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--off-white);
+    color:var(--black);
+    font-family:var(--body);
+    overflow-x:hidden;
+    cursor:default;
+  }
+  ::selection{background:var(--pink);color:var(--white);}
+
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+
+  .wrap{max-width:1400px;margin:0 auto;padding:0 32px;}
+  @media (max-width:600px){
+    .wrap{padding:0 18px;}
+  }
+
+  /* focus visibility */
+  a:focus-visible, button:focus-visible{
+    outline:3px solid var(--pink);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  /* ============ NAV ============ */
+  header{
+    position:sticky;top:0;z-index:100;
+    background:var(--off-white);
+    border-bottom:var(--border-w) solid var(--black);
+  }
+  .nav-inner{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:16px 32px;
+    max-width:1400px;margin:0 auto;
+    gap:12px;
+  }
+  .logo{
+    font-family:var(--display);
+    font-size:22px;
+    letter-spacing:-0.02em;
+  }
+  @media (max-width:600px){
+    .nav-inner{padding:14px 18px;}
+    .logo{font-size:17px;}
+    .nav-cta{display:none;}
+  }
+  @media (min-width:601px) and (max-width:900px){
+    .nav-cta{display:none;}
+  }
+  .nav-links{
+    display:flex;gap:0;
+    border:var(--border-w) solid var(--black);
+  }
+  .nav-links a{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.08em;
+    padding:12px 18px;
+    border-right:var(--border-w) solid var(--black);
+    transition:background .12s ease, color .12s ease;
+  }
+  .nav-links a:last-child{border-right:none;}
+  .nav-links a:hover{background:var(--pink);color:var(--white);}
+  .nav-cta{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.05em;
+    background:var(--black);
+    color:var(--white);
+    padding:13px 20px;
+    border:var(--border-w) solid var(--black);
+    white-space:nowrap;
+    transition:background .12s ease, color .12s ease, transform .12s ease;
+  }
+  .nav-cta:hover{background:var(--pink);border-color:var(--pink);transform:translate(-2px,-2px);box-shadow:4px 4px 0 var(--black);}
+
+  .burger{
+    display:none;
+    font-family:var(--mono);
+    font-size:12px;
+    border:var(--border-w) solid var(--black);
+    padding:11px 14px;
+    background:var(--white);
+    line-height:1;
+  }
+  .burger.is-open{background:var(--pink);border-color:var(--pink);color:var(--white);}
+
+  .mobile-nav{
+    display:none;
+    position:fixed;
+    inset:0;
+    top:0;
+    z-index:200;
+    background:var(--off-white);
+    border-top:var(--border-w) solid var(--black);
+    padding:24px 24px 40px;
+    overflow-y:auto;
+  }
+  .mobile-nav.is-open{display:block;}
+  .mobile-nav-top{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:32px;
+  }
+  .mobile-nav-close{
+    font-family:var(--mono);font-size:12px;
+    border:var(--border-w) solid var(--black);
+    padding:11px 14px;background:var(--black);color:var(--white);
+  }
+  .mobile-nav-links{display:flex;flex-direction:column;border:var(--border-w) solid var(--black);}
+  .mobile-nav-links a{
+    font-family:var(--display);
+    font-size:22px;
+    padding:20px 18px;
+    border-bottom:var(--border-w) solid var(--black);
+    letter-spacing:-0.01em;
+  }
+  .mobile-nav-links a:last-child{border-bottom:none;}
+  .mobile-nav-links a:active{background:var(--pink);color:var(--white);}
+  .mobile-nav-cta{
+    display:block;
+    margin-top:20px;
+    text-align:center;
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.05em;
+    background:var(--pink);
+    color:var(--white);
+    padding:18px 20px;
+    border:var(--border-w) solid var(--pink);
+  }
+
+  @media (max-width:900px){
+    .nav-links{display:none;}
+    .burger{display:block;}
+  }
+  @media (min-width:901px){
+    .mobile-nav{display:none !important;}
+  }
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;
+    border-bottom:var(--border-w) solid var(--black);
+    padding:70px 0 40px;
+    overflow:hidden;
+  }
+  @media (max-width:600px){
+    .hero{padding:40px 0 28px;}
+  }
+  #hero-grid{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    z-index:0;
+    pointer-events:none;
+  }
+  .hero-inner{position:relative;z-index:2;}
+
+  .hero-eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.12em;
+    color:var(--grey);
+    display:flex;justify-content:space-between;
+    padding-bottom:24px;
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .hero h1{
+    font-family:var(--display);
+    font-size:clamp(52px, 15vw, 168px);
+    line-height:0.86;
+    letter-spacing:-0.02em;
+    margin:0 0 18px;
+    word-break:break-word;
+  }
+  .hero h1 span{color:var(--pink);}
+  .hero-break{display:none;}
+  @media (max-width:600px){
+    .hero-break{display:block;}
+  }
+
+  .hero-sub{
+    font-family:var(--mono);
+    font-size:clamp(10px,1.6vw,15px);
+    letter-spacing:0.06em;
+    color:var(--black);
+    border-top:2px solid var(--black);
+    border-bottom:2px solid var(--black);
+    padding:12px 0;
+    display:flex;flex-wrap:wrap;gap:6px 18px;
+    margin-bottom:36px;
+  }
+  .hero-sub b{color:var(--pink);}
+
+  .hero-tagline-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    gap:24px;
+    flex-wrap:wrap;
+  }
+  .hero-tagline{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:clamp(20px,3vw,38px);
+    max-width:640px;
+    line-height:1.15;
+  }
+  .hero-coord{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--grey);
+    text-align:right;
+    line-height:1.6;
+  }
+
+  @media (max-width:600px){
+    .hero-eyebrow{font-size:9px;padding-bottom:16px;}
+    .hero h1{margin-bottom:14px;}
+    .hero-sub{gap:5px 12px;margin-bottom:24px;}
+    .hero-tagline-row{gap:16px;}
+    .hero-coord{text-align:left;font-size:10px;}
+  }
+
+  /* ============ MARQUEE ============ */
+  .marquee{
+    border-bottom:var(--border-w) solid var(--black);
+    background:var(--black);
+    color:var(--white);
+    overflow:hidden;
+    white-space:nowrap;
+    padding:12px 0;
+  }
+  .marquee-track{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:0.1em;
+    animation:scroll-left 32s linear infinite;
+  }
+  @media (max-width:600px){
+    .marquee-track{font-size:11px;}
+    .marquee{padding:10px 0;}
+  }
+  .marquee-track span{color:var(--pink);padding:0 10px;}
+  @keyframes scroll-left{
+    from{transform:translateX(0);}
+    to{transform:translateX(-50%);}
+  }
+
+  /* ============ SECTION LABELS ============ */
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    padding:56px 0 28px;
+    border-bottom:var(--border-w) solid var(--black);
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  @media (max-width:600px){
+    .section-head{padding:36px 0 22px;align-items:flex-start;}
+    .section-head p{max-width:100%;}
+  }
+  .section-tag{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.1em;
+    color:var(--pink);
+    margin-bottom:10px;
+    display:block;
+  }
+  .section-head h2{
+    font-family:var(--display);
+    font-size:clamp(30px,5vw,58px);
+    line-height:0.95;
+    letter-spacing:-0.01em;
+    max-width:680px;
+  }
+  .section-head p{
+    font-family:var(--body);
+    font-size:14px;
+    color:var(--grey);
+    max-width:280px;
+  }
+  .cap-badge-wrap{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .cap-badge{
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+    border:2px solid var(--black);
+    padding:8px 14px;
+    white-space:nowrap;
+  }
+  .cap-badge b{
+    font-family:var(--display);
+    font-size:22px;
+    color:var(--pink);
+  }
+  .cap-badge span{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.08em;
+    color:var(--black);
+  }
+
+  /* ============ CAPABILITIES ============ */
+  .capabilities{border-bottom:var(--border-w) solid var(--black);}
+  .cap-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+  }
+  @media (max-width:820px){.cap-grid{grid-template-columns:1fr;}}
+
+  .cap-card{
+    border-right:var(--border-w) solid var(--black);
+    border-bottom:var(--border-w) solid var(--black);
+    padding:40px 32px 48px;
+    position:relative;
+    transition:transform .15s ease;
+    background:var(--off-white);
+  }
+  @media (max-width:600px){
+    .cap-card{padding:28px 20px 32px;}
+  }
+  .cap-card:nth-child(2n){border-right:none;}
+  @media (max-width:820px){.cap-card{border-right:none !important;}}
+  .cap-card:hover{
+    transform:translate(-4px,-4px);
+    box-shadow:var(--shadow-off) var(--shadow-off) 0 var(--black);
+    z-index:2;
+    background:var(--white);
+  }
+  .cap-num{
+    font-family:var(--mono);
+    font-size:14px;
+    color:var(--pink);
+    margin-bottom:26px;
+  }
+  .cap-card h3{
+    font-family:var(--display);
+    font-size:clamp(24px,2.6vw,34px);
+    letter-spacing:-0.01em;
+    margin-bottom:14px;
+  }
+  .cap-card .cap-desc{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.04em;
+    color:var(--grey);
+    text-transform:uppercase;
+  }
+  .cap-card .cap-icon{
+    position:absolute;top:36px;right:32px;
+    width:44px;height:44px;
+  }
+
+  /* ============ RESEARCH (inverted) ============ */
+  .research{
+    background:var(--black);
+    color:var(--white);
+    border-bottom:var(--border-w) solid var(--black);
+  }
+  .research .section-head{border-bottom:var(--border-w) solid var(--white);}
+  .research .section-head p{color:#9a9a9a;}
+
+  .research-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+  }
+  @media (max-width:900px){.research-grid{grid-template-columns:repeat(2,1fr);}}
+  @media (max-width:520px){.research-grid{grid-template-columns:1fr;}}
+
+  .res-card{
+    border-right:2px solid #333;
+    padding:36px 24px 40px;
+    position:relative;
+  }
+  .research-grid .res-card:last-child{border-right:none;}
+  @media (max-width:900px){.res-card:nth-child(2n){border-right:none;}}
+  @media (max-width:520px){
+    .res-card{border-right:none !important;border-bottom:2px solid #333;padding:28px 4px 28px;}
+    .res-card:last-child{border-bottom:none;}
+  }
+  .res-card::before{
+    content:'';
+    position:absolute;top:0;left:0;
+    width:0%;height:2px;
+    background:var(--pink);
+    transition:width .25s ease;
+  }
+  .res-card:hover::before{width:100%;}
+  .res-tag{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--pink);
+    letter-spacing:0.1em;
+    margin-bottom:20px;
+    display:block;
+  }
+  .res-card h4{
+    font-family:var(--display);
+    font-size:20px;
+    margin-bottom:14px;
+    letter-spacing:-0.01em;
+  }
+  .res-card p{
+    font-family:var(--body);
+    font-size:13px;
+    color:#b3b3b3;
+    line-height:1.6;
+  }
+  .res-note{
+    padding:30px 0 56px;
+    font-family:var(--body);
+    font-size:clamp(16px,2vw,22px);
+    max-width:760px;
+    line-height:1.5;
+    color:#e4e4e4;
+  }
+  .res-note b{color:var(--pink);}
+
+  /* ============ PORTFOLIO ============ */
+  .portfolio{border-bottom:var(--border-w) solid var(--black);}
+  .port-grid{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-auto-rows:120px;
+    gap:0;
+  }
+  .port-item{
+    border-right:var(--border-w) solid var(--black);
+    border-bottom:var(--border-w) solid var(--black);
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+    padding:20px;
+    color:var(--white);
+    isolation:isolate;
+  }
+  .port-item .pat{
+    position:absolute;inset:0;z-index:-1;
+    background:#111;
+  }
+  .port-item .pat img{
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    filter:grayscale(85%) contrast(1.12) brightness(0.85);
+    transition:filter .2s ease, transform .3s ease;
+  }
+  .port-item:hover .pat img{
+    filter:grayscale(20%) contrast(1.1) brightness(0.9);
+    transform:scale(1.04);
+  }
+  .port-item::after{
+    content:'';
+    position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.82) 8%, rgba(0,0,0,0.15) 55%, rgba(0,0,0,0.05) 100%);
+    z-index:-1;
+  }
+  .port-num{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--pink);
+    margin-bottom:8px;
+  }
+  .port-item h5{
+    font-family:var(--display);
+    font-size:clamp(15px,1.6vw,22px);
+    line-height:1.1;
+    letter-spacing:-0.01em;
+  }
+  .port-item .port-type{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.06em;
+    color:#d8d8d8;
+    margin-top:6px;
+    margin-bottom:12px;
+  }
+  .port-tags{
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px;
+  }
+  .port-tag{
+    font-family:var(--mono);
+    font-size:9px;
+    letter-spacing:0.05em;
+    border:1.5px solid rgba(255,255,255,0.55);
+    color:var(--white);
+    padding:4px 8px;
+    background:rgba(0,0,0,0.25);
+    white-space:nowrap;
+  }
+  .port-tag.status{
+    border-color:var(--pink);
+    background:var(--pink);
+    color:var(--white);
+    font-weight:700;
+  }
+  .port-item{transition:filter .15s ease;}
+  .port-item:hover .port-num{color:var(--white);}
+
+  .p1{grid-column:1 / 4; grid-row: span 3;}
+  .p2{grid-column:4 / 7; grid-row: span 2;}
+  .p3{grid-column:4 / 5; grid-row: span 2;}
+  .p4{grid-column:5 / 7; grid-row: span 2;}
+  .p5{grid-column:1 / 3; grid-row: span 2;}
+  .p6{grid-column:3 / 7; grid-row: span 2;}
+
+  @media (max-width:820px){
+    .port-grid{grid-template-columns:1fr;grid-auto-rows:auto;}
+    .p1,.p2,.p3,.p4,.p5,.p6{grid-column:1;grid-row:auto;}
+    .port-item{aspect-ratio:4/3;padding:18px;min-height:200px;}
+  }
+  @media (max-width:600px){
+    .port-item{aspect-ratio:1/1;padding:16px;}
+    .port-item h5{font-size:19px;}
+    .port-tags{gap:5px;}
+    .port-tag{font-size:8.5px;padding:3px 6px;}
+  }
+
+  /* ============ TEAM ============ */
+  .team{
+    border-bottom:var(--border-w) solid var(--black);
+  }
+  .team-statement{
+    font-family:var(--body);
+    font-weight:600;
+    font-size:clamp(20px,3vw,32px);
+    line-height:1.4;
+    max-width:820px;
+    padding:8px 0 64px;
+  }
+  @media (max-width:600px){
+    .team-statement{padding:4px 0 44px;}
+  }
+
+  /* ============ ABOUT STRIP ============ */
+  .about{
+    border-bottom:var(--border-w) solid var(--black);
+    padding:64px 0;
+  }
+  .about-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:60px;
+  }
+  @media (max-width:820px){.about-grid{grid-template-columns:1fr;gap:32px;}}
+  @media (max-width:600px){
+    .about{padding:44px 0;}
+    .stat-row{flex-direction:column;}
+    .stat{border-right:none;border-bottom:2px solid var(--black);}
+    .stat:last-child{border-bottom:none;}
+  }
+  .about h2{
+    font-family:var(--display);
+    font-size:clamp(28px,4vw,48px);
+    line-height:1.05;
+    letter-spacing:-0.01em;
+  }
+  .about h2 em{
+    font-style:normal;
+    background:var(--pink);
+    color:var(--white);
+    padding:0 8px;
+  }
+  .about-body p{
+    font-family:var(--body);
+    font-size:16px;
+    line-height:1.7;
+    color:#333;
+    margin-bottom:16px;
+  }
+  .stat-row{
+    display:flex;gap:0;
+    margin-top:28px;
+    border:var(--border-w) solid var(--black);
+  }
+  .stat{
+    flex:1;
+    padding:18px 16px;
+    border-right:2px solid var(--black);
+  }
+  .stat:last-child{border-right:none;}
+  .stat b{
+    display:block;
+    font-family:var(--display);
+    font-size:28px;
+    color:var(--pink);
+  }
+  .stat span{
+    font-family:var(--mono);
+    font-size:10px;
+    letter-spacing:0.06em;
+    color:var(--grey);
+  }
+
+  /* ============ CONTACT / FOOTER ============ */
+  footer{
+    background:var(--black);
+    color:var(--white);
+  }
+  .contact{
+    padding:80px 0 60px;
+    border-bottom:2px solid #333;
+  }
+  .contact-eyebrow{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--pink);
+    letter-spacing:0.1em;
+    margin-bottom:18px;
+    display:block;
+  }
+  .contact h2{
+    font-family:var(--display);
+    font-size:clamp(36px,7vw,96px);
+    line-height:0.95;
+    letter-spacing:-0.02em;
+    margin-bottom:36px;
+  }
+  .contact-cta{
+    display:inline-flex;
+    align-items:center;
+    gap:14px;
+    font-family:var(--mono);
+    font-size:14px;
+    letter-spacing:0.05em;
+    background:var(--pink);
+    color:var(--white);
+    padding:18px 28px;
+    border:var(--border-w) solid var(--pink);
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .contact-cta:hover{
+    transform:translate(-4px,-4px);
+    box-shadow:6px 6px 0 var(--white);
+  }
+
+  .footer-grid{
+    padding:44px 0;
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:24px;
+    border-bottom:2px solid #333;
+  }
+  @media (max-width:820px){.footer-grid{grid-template-columns:1fr 1fr;}}
+  @media (max-width:600px){
+    .footer-grid{grid-template-columns:1fr;gap:28px;padding:36px 0;}
+    .contact{padding:56px 0 44px;}
+    .footer-bottom{flex-direction:column;padding:18px 0;}
+  }
+  .footer-grid h6{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--pink);
+    letter-spacing:0.1em;
+    margin-bottom:16px;
+  }
+  .footer-grid a, .footer-grid p{
+    display:block;
+    font-family:var(--body);
+    font-size:14px;
+    color:#cfcfcf;
+    margin-bottom:8px;
+    transition:color .12s ease;
+  }
+  .footer-grid a:hover{color:var(--pink);}
+
+  .footer-bottom{
+    padding:22px 0;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    font-family:var(--mono);
+    font-size:11px;
+    color:#7a7a7a;
+    letter-spacing:0.04em;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a class="logo" href="#top">PLAYMAKERS</a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#work">WORK</a>
+      <a href="#capabilities">CAPABILITIES</a>
+      <a href="#research">RESEARCH</a>
+      <a href="#about">ABOUT</a>
+      <a href="#contact">CONTACT</a>
+    </nav>
+    <a class="nav-cta" href="#contact">LET'S COLLABORATE →</a>
+    <button class="burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">MENU</button>
+  </div>
+</header>
+
+<div class="mobile-nav" id="mobileNav">
+  <div class="mobile-nav-top">
+    <span class="logo">PLAYMAKERS</span>
+    <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">CLOSE ✕</button>
+  </div>
+  <nav class="mobile-nav-links" aria-label="Mobile primary">
+    <a href="#work">WORK</a>
+    <a href="#capabilities">CAPABILITIES</a>
+    <a href="#research">RESEARCH</a>
+    <a href="#about">ABOUT</a>
+    <a href="#contact">CONTACT</a>
+  </nav>
+  <a class="mobile-nav-cta" href="#contact">LET'S COLLABORATE →</a>
+</div>
+
+<main id="top">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <svg id="hero-grid" viewBox="0 0 1400 620" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <pattern id="gridPattern" width="70" height="70" patternUnits="userSpaceOnUse">
+          <path d="M 70 0 L 0 0 0 70" fill="none" stroke="#0A0A0A" stroke-opacity="0.06" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="1400" height="620" fill="url(#gridPattern)"/>
+      <g id="heroLines" stroke="#E32D91" stroke-opacity="0.5" stroke-width="1.4" fill="none">
+        <polyline points="60,520 280,460 480,500 700,430 900,470 1120,400 1340,450"/>
+        <circle cx="280" cy="460" r="3" fill="#E32D91"/>
+        <circle cx="700" cy="430" r="3" fill="#E32D91"/>
+        <circle cx="1120" cy="400" r="3" fill="#E32D91"/>
+      </g>
+      <g id="heroContour" stroke="#0A0A0A" stroke-opacity="0.10" stroke-width="1" fill="none">
+        <path d="M -20,120 C 200,60 400,180 650,110 C 900,40 1100,150 1420,90"/>
+        <path d="M -20,170 C 220,110 420,230 660,160 C 910,90 1110,200 1420,140"/>
+      </g>
+    </svg>
+
+    <div class="wrap hero-inner">
+      <div class="hero-eyebrow">
+        <span>N 19.0760° / E 72.8777° / SITE 001</span>
+        <span>EST. PRACTICE / DESIGN &amp; RESEARCH</span>
+      </div>
+
+      <h1>PLAY<br class="hero-break"><span>MAKERS</span></h1>
+
+      <div class="hero-sub">
+        <span><b>ARCHITECTURE</b></span>
+        <span>/ URBAN PLANNING &amp; DESIGN</span>
+        <span>/ LANDSCAPE</span>
+        <span>/ GEOMATICS</span>
+        <span>/ RESEARCH</span>
+      </div>
+
+      <div class="hero-tagline-row">
+        <p class="hero-tagline">Crafting Healthy Communities through spatial research, rigorous data and considered design.</p>
+        <p class="hero-coord">SCALE 1:100<br>DRAWING NO. PM–00.1<br>REV A</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track">
+      SITE ANALYSIS <span>◆</span> SPATIAL DATA <span>◆</span> URBAN DESIGN <span>◆</span> LANDSCAPE ARCHITECTURE <span>◆</span> GIS &amp; GEOMATICS <span>◆</span> RESEARCH-LED DESIGN <span>◆</span>
+      SITE ANALYSIS <span>◆</span> SPATIAL DATA <span>◆</span> URBAN DESIGN <span>◆</span> LANDSCAPE ARCHITECTURE <span>◆</span> GIS &amp; GEOMATICS <span>◆</span> RESEARCH-LED DESIGN <span>◆</span>
+    </div>
+  </div>
+
+  <!-- ================= CAPABILITIES ================= -->
+  <section class="capabilities" id="capabilities">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="section-tag">CAPABILITIES / 01–04</span>
+          <h2>What we practice</h2>
+        </div>
+        <div class="cap-badge-wrap">
+          <div class="cap-badge"><b>04</b><span>DISCIPLINES</span></div>
+          <p>Four disciplines, one continuous process, from ground survey to built form.</p>
+        </div>
+      </div>
+    </div>
+    <div class="cap-grid">
+      <div class="cap-card">
+        <div class="cap-num">01</div>
+        <h3>ARCHITECTURE</h3>
+        <p class="cap-desc">Design / Documentation / Spatial Planning</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">02</div>
+        <h3>URBAN PLANNING &amp; DESIGN</h3>
+        <p class="cap-desc">Master Planning / Policy / Public Realm</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">03</div>
+        <h3>LANDSCAPE</h3>
+        <p class="cap-desc">Landscape Architecture / Ecology / Open Space</p>
+      </div>
+      <div class="cap-card">
+        <div class="cap-num">04</div>
+        <h3>GEOMATICS</h3>
+        <p class="cap-desc">GIS / Survey / Spatial Data Analysis</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= RESEARCH ================= -->
+  <section class="research" id="research">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="section-tag">PROCESS / 001–004</span>
+          <h2>We research before we design</h2>
+        </div>
+        <p>A place is read before it is drawn.</p>
+      </div>
+      <div class="research-grid">
+        <div class="res-card">
+          <span class="res-tag">RESEARCH / 001</span>
+          <h4>Site Reading</h4>
+          <p>Understanding context: history, use, movement and community, before a line is drawn.</p>
+        </div>
+        <div class="res-card">
+          <span class="res-tag">DATA / 002</span>
+          <h4>Spatial Data</h4>
+          <p>GIS mapping, survey and quantitative capture of the physical and social terrain.</p>
+        </div>
+        <div class="res-card">
+          <span class="res-tag">SPATIAL ANALYSIS / 003</span>
+          <h4>Analysis</h4>
+          <p>Overlaying data sets to surface patterns, constraints and opportunities on site.</p>
+        </div>
+        <div class="res-card">
+          <span class="res-tag">DESIGN RESPONSE / 004</span>
+          <h4>Response</h4>
+          <p>Translating findings into architectural, urban and landscape propositions.</p>
+        </div>
+      </div>
+      <p class="res-note">We don't simply <b>make designs</b>; we research and analyse places first, so every spatial response is grounded in evidence.</p>
+    </div>
+  </section>
+
+  <!-- ================= PORTFOLIO ================= -->
+  <section class="portfolio" id="work">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="section-tag">SELECTED WORK</span>
+          <h2>Projects</h2>
+        </div>
+        <p>A sample of built, planned and researched work across scales.</p>
+      </div>
+    </div>
+    <div class="port-grid">
+      <a class="port-item p1" href="#" aria-label="AWSOM Landscape Design project">
+        <span class="pat"><img src="https://images.unsplash.com/photo-1761637822930-fb1c1a3df94d?w=1200&q=80&auto=format&fit=crop" alt="Modern garden pathway with stone wall and hedges" loading="lazy"></span>
+        <span class="port-num">PROJECT / 01</span>
+        <h5>AWSOM Landscape Design</h5>
+        <span class="port-type">Landscape</span>
+        <span class="port-tags">
+          <span class="port-tag">LANDSCAPE DESIGN</span>
+          <span class="port-tag">PLANTING PLAN</span>
+          <span class="port-tag">CAD DRAWINGS</span>
+          <span class="port-tag status">GFC DONE</span>
+        </span>
+      </a>
+      <a class="port-item p2" href="#" aria-label="BKC Walkability project">
+        <span class="pat"><img src="https://images.unsplash.com/photo-1513171920216-2640b288471b?w=1600&q=80&auto=format&fit=crop" alt="Aerial view of people walking on a pedestrian lane" loading="lazy"></span>
+        <span class="port-num">PROJECT / 02</span>
+        <h5>BKC Walkability</h5>
+        <span class="port-type">Urban Planning &amp; Design</span>
+        <span class="port-tags">
+          <span class="port-tag">URBAN DESIGN</span>
+          <span class="port-tag">PEDESTRIAN INFRASTRUCTURE</span>
+          <span class="port-tag">WALKABILITY STUDY</span>
+          <span class="port-tag status">APPROVED</span>
+        </span>
+      </a>
+      <a class="port-item p3" href="#" aria-label="Velachery Park project">
+        <span class="pat"><img src="https://images.unsplash.com/photo-1705355908723-040b1e606d32?w=900&q=80&auto=format&fit=crop" alt="Aerial view of an urban lake surrounded by green space" loading="lazy"></span>
+        <span class="port-num">PROJECT / 03</span>
+        <h5>Velachery Park</h5>
+        <span class="port-type">Landscape</span>
+        <span class="port-tags">
+          <span class="port-tag">LANDSCAPE DESIGN</span>
+          <span class="port-tag">PLANTING PLAN</span>
+          <span class="port-tag status">ON SITE</span>
+        </span>
+      </a>
+      <a class="port-item p4" href="#" aria-label="Coastal Flood Mapping project">
+        <span class="pat"><img src="https://images.unsplash.com/photo-1769184615939-00913575f62a?w=1200&q=80&auto=format&fit=crop" alt="Topographic map with contour lines" loading="lazy"></span>
+        <span class="port-num">PROJECT / 04</span>
+        <h5>Coastal Flood Mapping</h5>
+        <span class="port-type">Geomatics / GIS Study</span>
+        <span class="port-tags">
+          <span class="port-tag">GIS ANALYSIS</span>
+          <span class="port-tag">SURVEY</span>
+          <span class="port-tag">REMOTE SENSING</span>
+          <span class="port-tag status">COMPLETED</span>
+        </span>
+      </a>
+      <a class="port-item p5" href="#" aria-label="Railway Station Drawings project">
+        <span class="pat"><img src="https://images.unsplash.com/photo-1760259906050-409eb67722de?w=900&q=80&auto=format&fit=crop" alt="Modern railway station platform with glass facade" loading="lazy"></span>
+        <span class="port-num">PROJECT / 05</span>
+        <h5>Railway Station Drawings</h5>
+        <span class="port-type">Architecture / Transit</span>
+        <span class="port-tags">
+          <span class="port-tag">CONCEPT DESIGN</span>
+          <span class="port-tag">CAD DRAWINGS</span>
+          <span class="port-tag">GFC DRAWINGS</span>
+          <span class="port-tag status">GFC DONE</span>
+        </span>
+      </a>
+      <a class="port-item p6" href="#" aria-label="Civic Commons Redevelopment project">
+        <span class="pat"><img src="https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?w=1600&q=80&auto=format&fit=crop" alt="Hands writing and sketching on a research report" loading="lazy"></span>
+        <span class="port-num">PROJECT / 06</span>
+        <h5>Civic Commons Redevelopment</h5>
+        <span class="port-type">Research</span>
+        <span class="port-tags">
+          <span class="port-tag">SITE ANALYSIS</span>
+          <span class="port-tag">RESEARCH AND REPORT WRITING</span>
+          <span class="port-tag status">WORK DONE</span>
+        </span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section class="about" id="about">
+    <div class="wrap about-grid">
+      <h2>A practice built at the intersection of <em>design</em> and <em>data</em>.</h2>
+      <div class="about-body">
+        <p>Playmakers works across architecture, urban planning, landscape and geomatics, treating each project as both a spatial and a research problem. We work with planning authorities, developers, NGOs and communities to shape places that function, endure and belong.</p>
+        <p>Every commission begins on the ground: mapped, measured and understood before it is designed.</p>
+        <div class="stat-row">
+          <div class="stat"><b>10+</b><span>YEARS OF PROFESSIONAL EXPERIENCE</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TEAM ================= -->
+  <section class="team" id="team">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <span class="section-tag">THE PRACTICE</span>
+          <h2>A decade of practice, three schools of thought.</h2>
+        </div>
+      </div>
+      <p class="team-statement">We have 10+ years of professional experience, and are alumnus of Mumbai University, CEPT University and Newcastle University.</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= CONTACT / FOOTER ================= -->
+<footer id="contact">
+  <div class="wrap contact">
+    <span class="contact-eyebrow">GET IN TOUCH / 05</span>
+    <h2>Let's build something<br>grounded.</h2>
+    <a class="contact-cta" href="mailto:playxmakers@gmail.com">START A CONVERSATION →</a>
+  </div>
+
+  <div class="wrap footer-grid">
+    <div>
+      <h6>PLAYMAKERS</h6>
+      <p>Architecture / Urban Planning &amp; Design / Landscape / Geomatics / Research.</p>
+    </div>
+    <div>
+      <h6>STUDIO</h6>
+      <a href="#work">Work</a>
+      <a href="#capabilities">Capabilities</a>
+      <a href="#research">Research</a>
+      <a href="#about">About</a>
+    </div>
+    <div>
+      <h6>CONTACT</h6>
+      <a href="mailto:playxmakers@gmail.com">playxmakers@gmail.com</a>
+      <a href="tel:+919082611716">+91 90826 11716</a>
+    </div>
+    <div>
+      <h6>FOLLOW</h6>
+      <a href="https://www.instagram.com/playxmakers/" target="_blank" rel="noopener">Instagram</a>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <span>© 2026 PLAYMAKERS STUDIO</span>
+    <span>DRAWING NO. PM–00.1 / REV A / ALL RIGHTS RESERVED</span>
+  </div>
+</footer>
+
+<script>
+  // Mobile nav toggle
+  (function(){
+    var burger = document.getElementById('burgerBtn');
+    var closeBtn = document.getElementById('mobileNavClose');
+    var nav = document.getElementById('mobileNav');
+    if(!burger || !nav) return;
+
+    function openNav(){
+      nav.classList.add('is-open');
+      burger.classList.add('is-open');
+      burger.setAttribute('aria-expanded','true');
+      document.body.style.overflow='hidden';
+    }
+    function closeNav(){
+      nav.classList.remove('is-open');
+      burger.classList.remove('is-open');
+      burger.setAttribute('aria-expanded','false');
+      document.body.style.overflow='';
+    }
+    burger.addEventListener('click', function(){
+      nav.classList.contains('is-open') ? closeNav() : openNav();
+    });
+    closeBtn.addEventListener('click', closeNav);
+    nav.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', closeNav);
+    });
+    window.addEventListener('keydown', function(e){
+      if(e.key === 'Escape') closeNav();
+    });
+  })();
+
+  // Subtle cursor-responsive hero graphic
+  (function(){
+    var lines = document.getElementById('heroLines');
+    var contour = document.getElementById('heroContour');
+    var hero = document.querySelector('.hero');
+    if(!hero || !lines) return;
+    var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(reduceMotion) return;
+
+    hero.addEventListener('mousemove', function(e){
+      var rect = hero.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      lines.style.transform = 'translate(' + (x * 14) + 'px,' + (y * 10) + 'px)';
+      contour.style.transform = 'translate(' + (x * -8) + 'px,' + (y * -6) + 'px)';
+    });
+    hero.addEventListener('mouseleave', function(){
+      lines.style.transform = 'translate(0,0)';
+      contour.style.transform = 'translate(0,0)';
+    });
+  })();
+
+  // Generate abstract "map/plan" SVG patterns for portfolio tiles (no external images)
+  
+</script>
+
+</body>
+</html>
